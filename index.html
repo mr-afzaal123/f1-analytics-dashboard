@@ -1059,7 +1059,7 @@ function showRaceDetail(idx) {
               </td>
               <td style="color:var(--muted)">${r.laps}</td>
               <td><span class="wins-badge" style="color:var(--text)">${r.points}</span></td>
-              <td style="color:${r.status==='Finished'?'#00C864':'var(--muted)';font-size:12px}">${r.status}</td>
+              <td style="color:${r.status==='Finished'?'#00C864':'#888888'};font-size:12px">${r.status}</td>
             </tr>
           `).join('')}
         </tbody>
