@@ -2,275 +2,239 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>F1 Race Analytics — Azure Lakehouse</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --red: #E10600;
-  --red-dark: #9B0400;
-  --black: #080808;
-  --dark: #111111;
-  --card: #161616;
-  --card2: #1c1c1c;
-  --border: #2a2a2a;
-  --text: #F0F0F0;
-  --muted: #777;
-  --gold: #FFD700;
-  --silver: #C0C0C0;
-  --bronze: #CD7F32;
+  --red:#E10600; --black:#080808; --dark:#111; --card:#161616; --border:#252525;
+  --text:#F0F0F0; --muted:#666; --gold:#FFD700; --silver:#C0C0C0; --bronze:#CD7F32;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-body { background:var(--black); color:var(--text); font-family:'Barlow',sans-serif; min-height:100vh; overflow-x:hidden; }
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--black);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh;overflow-x:hidden;}
 
-/* HEADER */
-header {
-  position:sticky; top:0; z-index:200;
-  background:rgba(8,8,8,0.97); backdrop-filter:blur(12px);
-  border-bottom:2px solid var(--red);
-  display:flex; align-items:center; justify-content:space-between;
-  padding:0 2rem; height:60px;
-}
-.logo { display:flex; align-items:center; gap:10px; }
-.logo-box {
-  background:var(--red); width:34px; height:34px;
-  clip-path:polygon(12% 0%,100% 0%,88% 100%,0% 100%);
-  display:flex; align-items:center; justify-content:center;
-  font-family:'Bebas Neue',sans-serif; font-size:17px; color:#fff; padding-left:3px;
-}
-.logo-text { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:3px; }
-.logo-text span { color:var(--red); }
-nav { display:flex; }
-nav button {
-  background:none; border:none; color:var(--muted);
-  font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700;
-  letter-spacing:2px; text-transform:uppercase;
-  padding:0 18px; height:60px; cursor:pointer; transition:all 0.2s;
-  border-bottom:3px solid transparent; position:relative; top:1px;
-}
-nav button:hover { color:var(--text); }
-nav button.active { color:var(--red); border-bottom-color:var(--red); }
-.live-badge {
-  background:var(--red); color:#fff;
-  font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700;
-  letter-spacing:1px; padding:3px 8px; border-radius:2px;
-}
+/* ── HEADER ── */
+header{position:sticky;top:0;z-index:300;background:rgba(8,8,8,.97);backdrop-filter:blur(12px);border-bottom:2px solid var(--red);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 1rem;}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;}
+.logo-box{background:var(--red);width:30px;height:30px;clip-path:polygon(12% 0%,100% 0%,88% 100%,0% 100%);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:15px;color:#fff;padding-left:3px;flex-shrink:0;}
+.logo-text{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;white-space:nowrap;}
+.logo-text span{color:var(--red);}
+.live-badge{background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;padding:2px 7px;border-radius:2px;flex-shrink:0;}
 
-/* SEASON BAR */
-.season-bar {
-  background:var(--dark); border-bottom:1px solid var(--border);
-  padding:10px 2rem; display:flex; align-items:center; gap:16px; flex-wrap:wrap;
-}
-.season-bar label {
-  font-family:'Barlow Condensed',sans-serif; font-size:12px;
-  font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted);
-}
-.season-select {
-  background:var(--card); border:1px solid var(--border); color:var(--text);
-  font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:700;
-  padding:6px 32px 6px 12px; border-radius:4px; cursor:pointer;
-  appearance:none; -webkit-appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23E10600' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
-  background-repeat:no-repeat; background-position:right 10px center;
-  min-width:100px;
-}
-.season-select:focus { outline:none; border-color:var(--red); }
-.season-info {
-  font-size:13px; color:var(--muted);
-  font-family:'Barlow Condensed',sans-serif; letter-spacing:1px;
-}
-.season-info span { color:var(--text); font-weight:700; }
+/* ── BOTTOM NAV (mobile) ── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:300;background:rgba(10,10,10,.98);border-top:1px solid var(--border);display:flex;height:56px;}
+.bottom-nav button{flex:1;background:none;border:none;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:color .2s;padding:0;}
+.bottom-nav button .icon{font-size:18px;line-height:1;}
+.bottom-nav button.active{color:var(--red);}
+.bottom-nav button.active .icon{filter:drop-shadow(0 0 4px var(--red));}
 
-/* HERO */
-.hero {
-  padding:48px 2rem 32px; position:relative; overflow:hidden;
-  border-bottom:1px solid var(--border);
-}
-.hero::after {
-  content:''; position:absolute; top:0; right:0; bottom:0;
-  width:40%; background:linear-gradient(90deg, transparent, rgba(225,6,0,0.03));
-  pointer-events:none;
-}
-.hero-eyebrow {
-  font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:700;
-  letter-spacing:3px; text-transform:uppercase; color:var(--red); margin-bottom:12px;
-  display:flex; align-items:center; gap:8px;
-}
-.hero-eyebrow::before { content:''; display:block; width:24px; height:2px; background:var(--red); }
-.hero h1 {
-  font-family:'Bebas Neue',sans-serif;
-  font-size:clamp(48px,8vw,88px); line-height:0.9; letter-spacing:2px; margin-bottom:16px;
-}
-.hero h1 em { color:var(--red); font-style:normal; }
-.hero-desc { color:var(--muted); font-size:14px; max-width:560px; line-height:1.7; margin-bottom:32px; }
-.hero-kpis { display:flex; gap:40px; flex-wrap:wrap; }
-.kpi { border-left:3px solid var(--red); padding-left:16px; }
-.kpi-num { font-family:'Bebas Neue',sans-serif; font-size:40px; color:var(--text); line-height:1; }
-.kpi-num span { color:var(--red); }
-.kpi-label { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); font-weight:600; margin-top:2px; }
+/* ── TOP NAV (desktop) ── */
+.top-nav{display:none;}
 
-/* MAIN */
-main { max-width:1400px; margin:0 auto; padding:32px 2rem 80px; }
-.section { display:none; animation:fadeUp 0.35s ease; }
-.section.active { display:block; }
-@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+/* ── SEASON BAR ── */
+.season-bar{background:var(--dark);border-bottom:1px solid var(--border);padding:8px 1rem;display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:56px;z-index:200;}
+.season-bar label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+.season-select{background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;padding:5px 28px 5px 10px;border-radius:4px;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23E10600' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;min-width:90px;}
+.season-select:focus{outline:none;border-color:var(--red);}
+.season-info{font-size:12px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;}
+.season-info span{color:var(--text);font-weight:700;}
 
-/* SECTION HEADER */
-.sec-head { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:28px; padding-bottom:16px; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:12px; }
-.sec-title { font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:2px; }
-.sec-sub { font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-top:4px; }
+/* ── SEARCH BAR ── */
+.search-wrap{padding:10px 1rem;background:var(--dark);border-bottom:1px solid var(--border);}
+.search-input{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;padding:8px 12px 8px 36px;border-radius:6px;outline:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:10px center;}
+.search-input:focus{border-color:var(--red);}
+.search-input::placeholder{color:var(--muted);}
+.search-results{background:var(--card);border:1px solid var(--border);border-radius:6px;margin-top:6px;display:none;max-height:280px;overflow-y:auto;}
+.search-result-item{padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer;font-size:13px;}
+.search-result-item:last-child{border-bottom:none;}
+.search-result-item:hover{background:rgba(225,6,0,.08);}
+.search-result-item .sr-title{font-weight:600;}
+.search-result-item .sr-sub{font-size:11px;color:var(--muted);margin-top:2px;}
 
-/* CARDS GRID */
-.kpi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px; margin-bottom:32px; }
-.kpi-card {
-  background:var(--card); border:1px solid var(--border); border-radius:8px;
-  padding:20px; position:relative; overflow:hidden;
-}
-.kpi-card::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--red); }
-.kpi-card-num { font-family:'Bebas Neue',sans-serif; font-size:36px; color:var(--red); line-height:1; }
-.kpi-card-label { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-top:4px; font-weight:600; }
-.kpi-card-sub { font-size:13px; color:var(--text); margin-top:6px; font-weight:600; }
+/* ── HERO ── */
+.hero{padding:28px 1rem 24px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.hero-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.hero-eyebrow::before{content:'';display:block;width:20px;height:2px;background:var(--red);}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,10vw,80px);line-height:.92;letter-spacing:2px;margin-bottom:12px;}
+.hero h1 em{color:var(--red);font-style:normal;}
+.hero-desc{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:20px;max-width:500px;}
+.hero-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+@media(min-width:480px){.hero-kpis{grid-template-columns:repeat(4,1fr);}}
+.kpi-pill{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px;border-left:3px solid var(--red);}
+.kpi-pill-num{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--red);line-height:1;}
+.kpi-pill-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-top:2px;}
 
-/* TABLE */
-.table-wrap { background:var(--card); border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:24px; }
-table { width:100%; border-collapse:collapse; }
-thead tr { background:rgba(225,6,0,0.08); border-bottom:1px solid var(--border); }
-th { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); padding:12px 16px; text-align:left; white-space:nowrap; }
-td { padding:13px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:14px; vertical-align:middle; }
-tr:last-child td { border-bottom:none; }
-tbody tr:hover td { background:rgba(255,255,255,0.025); }
+/* ── MAIN ── */
+main{max-width:1200px;margin:0 auto;padding:20px 1rem 72px;}
+.section{display:none;animation:fadeUp .3s ease;}
+.section.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-/* POS BADGE */
-.pos { width:30px; height:30px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',sans-serif; font-size:16px; flex-shrink:0; }
-.p1 { background:var(--gold); color:#000; }
-.p2 { background:var(--silver); color:#000; }
-.p3 { background:var(--bronze); color:#000; }
-.px { background:var(--border); color:var(--muted); }
+/* ── SEC HEADER ── */
+.sec-head{margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;}
+.sec-sub{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:3px;}
 
-/* DRIVER CELL */
-.driver-cell .name { font-weight:600; font-size:15px; }
-.driver-cell .nat { font-size:12px; color:var(--muted); margin-top:2px; }
+/* ── KPI CARDS ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;}
+@media(min-width:600px){.kpi-grid{grid-template-columns:repeat(3,1fr);}}
+@media(min-width:900px){.kpi-grid{grid-template-columns:repeat(5,1fr);}}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--red);}
+.kpi-card-num{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--red);line-height:1;}
+.kpi-card-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:3px;font-weight:600;}
+.kpi-card-sub{font-size:12px;color:var(--text);margin-top:4px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
-/* TEAM DOT */
-.tdot { width:10px; height:10px; border-radius:50%; display:inline-block; margin-right:8px; flex-shrink:0; }
+/* ── CHART ── */
+.chart-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:16px;}
+.chart-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.bar-chart{display:flex;flex-direction:column;gap:6px;}
+.bar-row{display:flex;align-items:center;gap:8px;}
+.bar-name{width:120px;font-size:11px;font-weight:500;text-align:right;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+@media(min-width:600px){.bar-name{width:160px;font-size:13px;}}
+.bar-track{flex:1;height:24px;background:rgba(255,255,255,.04);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:7px;font-family:'Bebas Neue',sans-serif;font-size:14px;color:#fff;transition:width 1s cubic-bezier(.4,0,.2,1);min-width:32px;}
 
-/* POINTS BAR */
-.pts-wrap { display:flex; align-items:center; gap:10px; }
-.pts-bar { height:5px; background:var(--red); border-radius:3px; min-width:3px; }
-.pts-num { font-family:'Bebas Neue',sans-serif; font-size:20px; min-width:45px; }
+/* ── TABLE ── */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:16px;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;min-width:400px;}
+thead tr{background:rgba(225,6,0,.06);border-bottom:1px solid var(--border);}
+th{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:10px 12px;text-align:left;white-space:nowrap;}
+td{padding:11px 12px;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tbody tr:hover td{background:rgba(255,255,255,.02);}
+.pos{width:26px;height:26px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:14px;}
+.p1{background:var(--gold);color:#000;}
+.p2{background:var(--silver);color:#000;}
+.p3{background:var(--bronze);color:#000;}
+.px{background:var(--border);color:var(--muted);}
+.dname{font-weight:600;font-size:13px;}
+.dnat{font-size:11px;color:var(--muted);margin-top:1px;}
+.tdot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;flex-shrink:0;}
+.pts-wrap{display:flex;align-items:center;gap:8px;}
+.pts-bar{height:4px;background:var(--red);border-radius:2px;min-width:2px;}
+.pts-num{font-family:'Bebas Neue',sans-serif;font-size:18px;min-width:40px;}
+.win-b{background:rgba(225,6,0,.12);color:var(--red);border:1px solid rgba(225,6,0,.25);border-radius:3px;padding:1px 6px;font-size:11px;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;white-space:nowrap;}
 
-/* WIN BADGE */
-.win-b { background:rgba(225,6,0,0.12); color:var(--red); border:1px solid rgba(225,6,0,0.25); border-radius:3px; padding:2px 7px; font-size:11px; font-weight:700; font-family:'Barlow Condensed',sans-serif; letter-spacing:1px; white-space:nowrap; }
+/* ── RACES ── */
+.races-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:16px;}
+@media(min-width:500px){.races-grid{grid-template-columns:repeat(2,1fr);}}
+@media(min-width:900px){.races-grid{grid-template-columns:repeat(3,1fr);}}
+.race-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px 14px 14px 18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.race-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--border);transition:background .2s;}
+.race-card:hover{border-color:rgba(225,6,0,.4);}
+.race-card:hover::before,.race-card.sel::before{background:var(--red);}
+.race-card.sel{border-color:var(--red);background:rgba(225,6,0,.04);}
+.rc-round{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--red);text-transform:uppercase;margin-bottom:4px;}
+.rc-name{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;margin-bottom:3px;}
+.rc-meta{font-size:11px;color:var(--muted);}
+.rc-winner{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.rc-win-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+.rc-win-name{font-weight:700;font-size:12px;margin-top:2px;}
+.detail-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;margin-top:14px;}
+.detail-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;margin-bottom:14px;}
 
-/* CHART */
-.chart-box { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:24px; margin-bottom:24px; }
-.chart-label { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:20px; }
-.bar-chart { display:flex; flex-direction:column; gap:8px; }
-.bar-row { display:flex; align-items:center; gap:10px; }
-.bar-name { width:150px; font-size:12px; font-weight:500; text-align:right; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.bar-track { flex:1; height:26px; background:rgba(255,255,255,0.04); border-radius:4px; overflow:hidden; }
-.bar-fill { height:100%; border-radius:4px; display:flex; align-items:center; padding-left:8px; font-family:'Bebas Neue',sans-serif; font-size:15px; color:#fff; transition:width 1s cubic-bezier(.4,0,.2,1); min-width:36px; }
+/* ── ALL TIME ── */
+.alltime-grid{display:grid;grid-template-columns:1fr;gap:14px;}
+@media(min-width:700px){.alltime-grid{grid-template-columns:repeat(2,1fr);}}
 
-/* RACES */
-.races-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px; margin-bottom:28px; }
-.race-card {
-  background:var(--card); border:1px solid var(--border); border-radius:8px;
-  padding:18px 18px 18px 22px; cursor:pointer; transition:all 0.2s;
-  position:relative; overflow:hidden;
-}
-.race-card::before { content:''; position:absolute; top:0; left:0; width:4px; height:100%; background:var(--border); transition:background 0.2s; }
-.race-card:hover { border-color:rgba(225,6,0,0.4); transform:translateY(-2px); box-shadow:0 8px 24px rgba(225,6,0,0.08); }
-.race-card:hover::before, .race-card.sel::before { background:var(--red); }
-.race-card.sel { border-color:var(--red); background:rgba(225,6,0,0.04); }
-.rc-round { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; letter-spacing:2px; color:var(--red); text-transform:uppercase; margin-bottom:5px; }
-.rc-name { font-family:'Bebas Neue',sans-serif; font-size:19px; letter-spacing:1px; margin-bottom:4px; }
-.rc-meta { font-size:12px; color:var(--muted); }
-.rc-winner { margin-top:12px; padding-top:12px; border-top:1px solid var(--border); display:flex; align-items:center; gap:8px; }
-.rc-win-lbl { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); }
-.rc-win-name { font-weight:700; font-size:13px; }
+/* ── PIPELINE ── */
+.pipe-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:16px;}
+@media(min-width:600px){.pipe-grid{grid-template-columns:repeat(2,1fr);}}
+@media(min-width:900px){.pipe-grid{grid-template-columns:repeat(3,1fr);}}
+.pipe-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;gap:12px;align-items:flex-start;}
+.pipe-ico{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.pipe-ico.g{background:rgba(0,200,100,.1);}
+.pipe-ico.y{background:rgba(255,200,0,.1);}
+.pipe-name{font-weight:700;font-size:13px;margin-bottom:3px;display:flex;align-items:center;gap:5px;}
+.pipe-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+.sdot{width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0;}
+.sdot.g{background:#00C864;box-shadow:0 0 4px #00C864;}
+.sdot.y{background:#FFD700;}
+.arch-flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:12px 0;}
+.arch-node{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:5px;padding:7px 11px;font-size:11px;font-weight:600;}
+.arch-node.hi{background:rgba(225,6,0,.1);border-color:rgba(225,6,0,.3);color:var(--red);}
+.arch-arr{color:var(--red);font-size:14px;}
 
-/* DETAIL BOX */
-.detail-box { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:24px; margin-top:20px; }
-.detail-title { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:1px; margin-bottom:20px; }
+/* ── CAREER MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;display:none;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--dark);border:1px solid var(--border);border-radius:12px;width:100%;max-width:600px;max-height:85vh;overflow-y:auto;}
+.modal-head{padding:16px 16px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--dark);z-index:1;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;}
+.modal-close{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1;padding:2px;}
+.modal-body{padding:16px;}
+.career-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.career-stat{background:var(--card);border-radius:6px;padding:12px;text-align:center;}
+.career-stat-num{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--red);}
+.career-stat-label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-top:2px;}
 
-/* PIPELINE */
-.pipe-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:14px; margin-bottom:28px; }
-.pipe-card { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:18px; display:flex; gap:14px; align-items:flex-start; }
-.pipe-ico { width:42px; height:42px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
-.pipe-ico.g { background:rgba(0,200,100,0.1); }
-.pipe-ico.b { background:rgba(0,120,255,0.1); }
-.pipe-ico.y { background:rgba(255,200,0,0.1); }
-.pipe-ico.r { background:rgba(225,6,0,0.1); }
-.pipe-name { font-weight:700; font-size:14px; margin-bottom:4px; display:flex; align-items:center; gap:6px; }
-.pipe-desc { font-size:12px; color:var(--muted); line-height:1.5; }
-.sdot { width:7px; height:7px; border-radius:50%; display:inline-block; }
-.sdot.g { background:#00C864; box-shadow:0 0 5px #00C864; }
-.sdot.y { background:#FFD700; }
+/* ── UTILS ── */
+.loading{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;padding:24px 0;}
+.spin{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.err{background:rgba(225,6,0,.08);border:1px solid rgba(225,6,0,.25);border-radius:6px;padding:12px 16px;color:#ff6b6b;font-size:13px;margin:12px 0;}
+.empty{text-align:center;padding:40px;color:var(--muted);font-size:13px;}
+.tag-fin{color:#00C864;font-size:11px;}
+.tag-dnf{color:var(--muted);font-size:11px;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--dark);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+::-webkit-scrollbar-thumb:hover{background:var(--red);}
 
-/* ARCH FLOW */
-.arch-flow { display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:16px 0; }
-.arch-node { background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:6px; padding:10px 14px; font-size:13px; font-weight:600; }
-.arch-node.highlight { background:rgba(225,6,0,0.1); border-color:rgba(225,6,0,0.3); color:var(--red); }
-.arch-arr { color:var(--red); font-size:18px; }
-
-/* LOADING / ERROR */
-.loading { display:flex; align-items:center; gap:10px; color:var(--muted); font-size:13px; padding:32px 0; }
-.spin { width:18px; height:18px; border:2px solid var(--border); border-top-color:var(--red); border-radius:50%; animation:spin 0.8s linear infinite; flex-shrink:0; }
-@keyframes spin { to{transform:rotate(360deg)} }
-.err { background:rgba(225,6,0,0.08); border:1px solid rgba(225,6,0,0.25); border-radius:6px; padding:14px 18px; color:#ff6b6b; font-size:13px; margin:16px 0; }
-.empty { text-align:center; padding:48px; color:var(--muted); font-size:14px; }
-
-/* STATUS TAG */
-.tag-fin { color:#00C864; font-size:12px; }
-.tag-dnf { color:var(--muted); font-size:12px; }
-
-/* SCROLLBAR */
-::-webkit-scrollbar { width:5px; }
-::-webkit-scrollbar-track { background:var(--dark); }
-::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
-::-webkit-scrollbar-thumb:hover { background:var(--red); }
-
-@media(max-width:768px) {
-  header { padding:0 1rem; }
-  nav button { padding:0 10px; font-size:11px; }
-  main { padding:20px 1rem 60px; }
-  .hero { padding:32px 1rem 24px; }
-  .hero-kpis { gap:20px; }
-  .bar-name { width:100px; }
+/* ── DESKTOP ── */
+@media(min-width:768px){
+  header{padding:0 2rem;}
+  .top-nav{display:flex;}
+  .top-nav button{background:none;border:none;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:0 16px;height:56px;cursor:pointer;transition:all .2s;border-bottom:3px solid transparent;position:relative;top:1px;}
+  .top-nav button:hover{color:var(--text);}
+  .top-nav button.active{color:var(--red);border-bottom-color:var(--red);}
+  .bottom-nav{display:none;}
+  main{padding:24px 2rem 60px;}
+  .season-bar{padding:8px 2rem;}
+  .search-wrap{padding:10px 2rem;}
+  .hero{padding:40px 2rem 32px;}
 }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">
+  <a class="logo" href="#">
     <div class="logo-box">F1</div>
     <div class="logo-text">RACE <span>ANALYTICS</span></div>
-  </div>
-  <nav>
+  </a>
+  <nav class="top-nav">
     <button class="active" onclick="nav('overview',this)">Overview</button>
     <button onclick="nav('drivers',this)">Drivers</button>
     <button onclick="nav('constructors',this)">Constructors</button>
     <button onclick="nav('races',this)">Races</button>
+    <button onclick="nav('alltime',this)">All-Time</button>
     <button onclick="nav('pipeline',this)">Pipeline</button>
   </nav>
-  <span class="live-badge">LIVE DATA</span>
+  <span class="live-badge">AZURE LIVE</span>
 </header>
 
 <div class="season-bar">
   <label>Season</label>
   <select class="season-select" id="seasonSelect" onchange="onSeasonChange()">
-    <option value="">Loading...</option>
+    <option>Loading...</option>
   </select>
-  <div class="season-info" id="seasonInfo">Loading data from Azure...</div>
+  <div class="season-info" id="seasonInfo">Fetching from Azure ADLS...</div>
+</div>
+
+<div class="search-wrap">
+  <input class="search-input" id="searchInput" placeholder="Search driver, circuit, constructor..." oninput="onSearch()" autocomplete="off">
+  <div class="search-results" id="searchResults"></div>
 </div>
 
 <div class="hero">
-  <div class="hero-eyebrow">Azure Lakehouse — Databricks + ADLS Gen2 + Delta Lake</div>
+  <div class="hero-eyebrow">Azure Databricks · ADLS Gen2 · Delta Lake · PySpark</div>
   <h1>F1 RACE<br><em>ANALYTICS</em></h1>
-  <p class="hero-desc">End-to-end cloud data engineering pipeline ingesting Formula 1 historical data from the Jolpica-F1 API, processed through Azure Databricks with PySpark, stored in Delta Lake, and served via this live dashboard.</p>
+  <p class="hero-desc">End-to-end cloud data engineering pipeline. Historical F1 data from 1950–2025, processed through Azure Databricks and served live from Azure ADLS Gen2.</p>
   <div class="hero-kpis" id="heroKpis">
-    <div class="loading"><div class="spin"></div>Fetching from Azure ADLS...</div>
+    <div class="loading"><div class="spin"></div>Loading from Azure...</div>
   </div>
 </div>
 
@@ -278,88 +242,90 @@ tbody tr:hover td { background:rgba(255,255,255,0.025); }
 
   <!-- OVERVIEW -->
   <section id="overview" class="section active">
-    <div class="sec-head">
-      <div><div class="sec-title" id="ovTitle">SEASON OVERVIEW</div><div class="sec-sub" id="ovSub">Select a season above</div></div>
-    </div>
+    <div class="sec-head"><div class="sec-title" id="ovTitle">SEASON OVERVIEW</div><div class="sec-sub" id="ovSub">Select a season</div></div>
     <div class="kpi-grid" id="ovKpis"></div>
-    <div class="chart-box">
-      <div class="chart-label">Driver Championship — Points</div>
-      <div class="bar-chart" id="driverChart"><div class="loading"><div class="spin"></div>Loading...</div></div>
-    </div>
-    <div class="chart-box">
-      <div class="chart-label">Constructor Championship — Points</div>
-      <div class="bar-chart" id="conChart"><div class="loading"><div class="spin"></div>Loading...</div></div>
-    </div>
+    <div class="chart-box"><div class="chart-label">Driver Championship — Points</div><div class="bar-chart" id="driverChart"><div class="loading"><div class="spin"></div>Loading...</div></div></div>
+    <div class="chart-box"><div class="chart-label">Constructor Championship — Points</div><div class="bar-chart" id="conChart"><div class="loading"><div class="spin"></div>Loading...</div></div></div>
   </section>
 
   <!-- DRIVERS -->
   <section id="drivers" class="section">
-    <div class="sec-head">
-      <div><div class="sec-title">DRIVER STANDINGS</div><div class="sec-sub" id="drvSub">Formula 1 Championship</div></div>
-    </div>
+    <div class="sec-head"><div class="sec-title">DRIVER STANDINGS</div><div class="sec-sub" id="drvSub">Championship</div></div>
     <div id="driverTable"><div class="loading"><div class="spin"></div>Loading...</div></div>
   </section>
 
   <!-- CONSTRUCTORS -->
   <section id="constructors" class="section">
-    <div class="sec-head">
-      <div><div class="sec-title">CONSTRUCTOR STANDINGS</div><div class="sec-sub" id="conSub">Constructors Championship</div></div>
-    </div>
+    <div class="sec-head"><div class="sec-title">CONSTRUCTOR STANDINGS</div><div class="sec-sub" id="conSub">Championship</div></div>
     <div id="conTable"><div class="loading"><div class="spin"></div>Loading...</div></div>
   </section>
 
   <!-- RACES -->
   <section id="races" class="section">
-    <div class="sec-head">
-      <div><div class="sec-title">RACE RESULTS</div><div class="sec-sub">Click any race to view full results</div></div>
-    </div>
+    <div class="sec-head"><div class="sec-title">RACE RESULTS</div><div class="sec-sub">Tap a race to view full results</div></div>
     <div id="racesGrid"><div class="loading"><div class="spin"></div>Loading...</div></div>
     <div id="raceDetail"></div>
   </section>
 
-  <!-- PIPELINE -->
-  <section id="pipeline" class="section">
-    <div class="sec-head">
-      <div><div class="sec-title">AZURE PIPELINE</div><div class="sec-sub">Data Engineering Infrastructure Status</div></div>
-    </div>
-    <div class="pipe-grid">
-      <div class="pipe-card"><div class="pipe-ico g">🌐</div><div><div class="pipe-name"><span class="sdot g"></span>Jolpica-F1 API</div><div class="pipe-desc">Community-maintained successor to the deprecated Ergast API. Provides F1 data from 1950 to present in JSON/CSV format.</div></div></div>
-      <div class="pipe-card"><div class="pipe-ico g">🗄️</div><div><div class="pipe-name"><span class="sdot g"></span>ADLS Gen2 — Raw</div><div class="pipe-desc">Azure Data Lake Storage Gen2 with hierarchical namespace enabled. Stores raw ingested JSON files per season.</div></div></div>
-      <div class="pipe-card"><div class="pipe-ico g">⚡</div><div><div class="pipe-name"><span class="sdot g"></span>Azure Databricks</div><div class="pipe-desc">f1-cluster running 13.3 LTS (Spark 3.4.1). PySpark notebooks handle ingestion, validation, and transformation.</div></div></div>
-      <div class="pipe-card"><div class="pipe-ico g">🔑</div><div><div class="pipe-name"><span class="sdot g"></span>Azure Key Vault</div><div class="pipe-desc">f1analytics-kv-2026 securely stores ADLS access keys. Integrated with Databricks secret scope f1-scope.</div></div></div>
-      <div class="pipe-card"><div class="pipe-ico g">📦</div><div><div class="pipe-name"><span class="sdot g"></span>ADLS Gen2 — Processed</div><div class="pipe-desc">Cleaned and transformed data in Parquet and Delta format. Schema-validated with ACID transaction support.</div></div></div>
-      <div class="pipe-card"><div class="pipe-ico g">🏁</div><div><div class="pipe-name"><span class="sdot g"></span>ADLS Gen2 — Presentation</div><div class="pipe-desc">Analytics-ready JSON exports: driver standings, constructor standings, and race results across all seasons.</div></div></div>
-      <div class="pipe-card"><div class="pipe-ico y">🔄</div><div><div class="pipe-name"><span class="sdot y"></span>Azure Data Factory</div><div class="pipe-desc">Orchestrates and automates the complete pipeline. Trigger-based execution with retry and monitoring.</div></div></div>
-      <div class="pipe-card"><div class="pipe-ico g">🌍</div><div><div class="pipe-name"><span class="sdot g"></span>Azure Static Web Apps</div><div class="pipe-desc">Public dashboard deployed from GitHub via CI/CD. Consumes JSON data directly from ADLS presentation layer.</div></div></div>
-    </div>
-    <div class="chart-box">
-      <div class="chart-label">Data Architecture Flow</div>
-      <div class="arch-flow">
-        <div class="arch-node highlight">Jolpica-F1 API</div>
-        <div class="arch-arr">→</div>
-        <div class="arch-node">ADLS Raw Layer</div>
-        <div class="arch-arr">→</div>
-        <div class="arch-node">Databricks PySpark</div>
-        <div class="arch-arr">→</div>
-        <div class="arch-node">Delta Lake</div>
-        <div class="arch-arr">→</div>
-        <div class="arch-node">ADLS Processed</div>
-        <div class="arch-arr">→</div>
-        <div class="arch-node">ADLS Presentation</div>
-        <div class="arch-arr">→</div>
-        <div class="arch-node highlight">This Dashboard</div>
+  <!-- ALL TIME -->
+  <section id="alltime" class="section">
+    <div class="sec-head"><div class="sec-title">ALL-TIME RECORDS</div><div class="sec-sub">Across all seasons in the dataset</div></div>
+    <div class="alltime-grid">
+      <div>
+        <div class="chart-box"><div class="chart-label">Most Championship Wins (Drivers)</div><div class="bar-chart" id="atDriverWins"><div class="loading"><div class="spin"></div></div></div></div>
+        <div class="chart-box"><div class="chart-label">Most Race Wins (Drivers)</div><div class="bar-chart" id="atRaceWins"><div class="loading"><div class="spin"></div></div></div></div>
+      </div>
+      <div>
+        <div class="chart-box"><div class="chart-label">Most Constructor Championships</div><div class="bar-chart" id="atConWins"><div class="loading"><div class="spin"></div></div></div></div>
+        <div class="chart-box"><div class="chart-label">Era Dominance — Races Won Per Decade</div><div class="bar-chart" id="atDecade"><div class="loading"><div class="spin"></div></div></div></div>
       </div>
     </div>
-    <div class="chart-box">
-      <div class="chart-label">Dataset Statistics</div>
-      <div id="pipeStats"><div class="loading"><div class="spin"></div>Loading...</div></div>
+    <div class="chart-box" style="margin-top:4px"><div class="chart-label">Most Points In A Single Season</div><div class="bar-chart" id="atPoints"><div class="loading"><div class="spin"></div></div></div></div>
+  </section>
+
+  <!-- PIPELINE -->
+  <section id="pipeline" class="section">
+    <div class="sec-head"><div class="sec-title">AZURE PIPELINE</div><div class="sec-sub">Data Engineering Infrastructure</div></div>
+    <div class="pipe-grid">
+      <div class="pipe-card"><div class="pipe-ico g">🌐</div><div><div class="pipe-name"><span class="sdot g"></span>Jolpica-F1 API</div><div class="pipe-desc">Successor to deprecated Ergast API. Provides F1 data 1950–present in JSON/CSV format with same endpoint structure.</div></div></div>
+      <div class="pipe-card"><div class="pipe-ico g">🗄️</div><div><div class="pipe-name"><span class="sdot g"></span>ADLS Gen2 — Raw Layer</div><div class="pipe-desc">Hierarchical namespace enabled. Stores raw JSON files per season for all datasets.</div></div></div>
+      <div class="pipe-card"><div class="pipe-ico g">⚡</div><div><div class="pipe-name"><span class="sdot g"></span>Azure Databricks</div><div class="pipe-desc">f1-cluster (13.3 LTS, Spark 3.4.1). PySpark notebooks handle ingestion, validation, transformation.</div></div></div>
+      <div class="pipe-card"><div class="pipe-ico g">🔑</div><div><div class="pipe-name"><span class="sdot g"></span>Azure Key Vault</div><div class="pipe-desc">f1analytics-kv-2026 stores ADLS access keys. Integrated with Databricks secret scope f1-scope.</div></div></div>
+      <div class="pipe-card"><div class="pipe-ico g">📦</div><div><div class="pipe-name"><span class="sdot g"></span>ADLS Gen2 — Processed</div><div class="pipe-desc">Cleaned data in Delta format with ACID transactions, versioning, and time travel support.</div></div></div>
+      <div class="pipe-card"><div class="pipe-ico g">🏁</div><div><div class="pipe-name"><span class="sdot g"></span>ADLS Gen2 — Presentation</div><div class="pipe-desc">Analytics-ready JSON exports consumed by this dashboard. Public blob access with CORS enabled.</div></div></div>
+      <div class="pipe-card"><div class="pipe-ico y">🔄</div><div><div class="pipe-name"><span class="sdot y"></span>Azure Data Factory</div><div class="pipe-desc">Orchestrates and automates the complete pipeline with trigger-based execution and monitoring.</div></div></div>
+      <div class="pipe-card"><div class="pipe-ico g">🌍</div><div><div class="pipe-name"><span class="sdot g"></span>Azure Static Web Apps</div><div class="pipe-desc">Public dashboard deployed via GitHub Actions CI/CD. Globally distributed, zero-config HTTPS.</div></div></div>
+      <div class="pipe-card"><div class="pipe-ico g">🔒</div><div><div class="pipe-name"><span class="sdot g"></span>Unity Catalog</div><div class="pipe-desc">Databricks Unity Catalog for data governance, access control, and lineage tracking.</div></div></div>
     </div>
+    <div class="chart-box"><div class="chart-label">Architecture Flow</div><div class="arch-flow"><div class="arch-node hi">Jolpica-F1 API</div><div class="arch-arr">→</div><div class="arch-node">ADLS Raw</div><div class="arch-arr">→</div><div class="arch-node">Databricks</div><div class="arch-arr">→</div><div class="arch-node">Delta Lake</div><div class="arch-arr">→</div><div class="arch-node">ADLS Processed</div><div class="arch-arr">→</div><div class="arch-node">ADLS Presentation</div><div class="arch-arr">→</div><div class="arch-node hi">This Dashboard</div></div></div>
+    <div class="chart-box"><div class="chart-label">Dataset Statistics</div><div id="pipeStats"><div class="loading"><div class="spin"></div></div></div></div>
   </section>
 
 </main>
 
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="active" onclick="nav('overview',this)"><span class="icon">🏠</span>Home</button>
+  <button onclick="nav('drivers',this)"><span class="icon">🏎️</span>Drivers</button>
+  <button onclick="nav('constructors',this)"><span class="icon">🏭</span>Teams</button>
+  <button onclick="nav('races',this)"><span class="icon">🏁</span>Races</button>
+  <button onclick="nav('alltime',this)"><span class="icon">🏆</span>Records</button>
+  <button onclick="nav('pipeline',this)"><span class="icon">⚙️</span>Pipeline</button>
+</nav>
+
+<!-- CAREER MODAL -->
+<div class="modal-overlay" id="careerModal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modalTitle">Driver Career</div>
+      <button class="modal-close" onclick="document.getElementById('careerModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
 <script>
-// ── DATA URLS ──────────────────────────────────────────────────────────────────
+// ── URLS ──────────────────────────────────────────────────────────────────────
 const URLS = {
   drivers:      'https://f1analyticsdata.blob.core.windows.net/presentation/driver_standings/part-00000-tid-810355763415988434-4319beba-4562-4246-bb2a-553ea84166ab-481-1-c000.json',
   constructors: 'https://f1analyticsdata.blob.core.windows.net/presentation/constructor_standings/part-00000-tid-404964768124553700-ffaf1002-d2f7-4355-9b7c-9acb44e1b3b7-482-1-c000.json',
@@ -367,270 +333,226 @@ const URLS = {
 };
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
-let ALL = { drivers:[], constructors:[], races:[] };
+let ALL = {drivers:[],constructors:[],races:[]};
 let season = '2024';
 let raceList = [];
 
 // ── TEAM COLORS ───────────────────────────────────────────────────────────────
-const TC = {
-  'Red Bull':'#3671C6','McLaren':'#FF8000','Ferrari':'#E8002D',
-  'Mercedes':'#27F4D2','Aston Martin':'#229971','Alpine':'#FF87BC',
-  'Williams':'#64C4FF','RB':'#6692FF','Haas':'#B6BABD','Sauber':'#52E252',
-  'Renault':'#FFF500','BMW':'#0066CC','Toyota':'#CC0000','BAR':'#CDCDCD',
-  'Lotus':'#FFB800','Brabham':'#006633','Tyrrell':'#002147','default':'#666'
-};
-function tc(t) {
-  if (!t) return TC.default;
-  for (const [k,v] of Object.entries(TC)) { if (t.includes(k)) return v; }
-  return TC.default;
-}
+const TC = {'Red Bull':'#3671C6','McLaren':'#FF8000','Ferrari':'#E8002D','Mercedes':'#27F4D2','Aston Martin':'#229971','Alpine':'#FF87BC','Williams':'#64C4FF','RB':'#6692FF','Haas':'#B6BABD','Sauber':'#52E252','Renault':'#FFF500','BMW':'#0066CC','Toyota':'#CC0000','BAR':'#CDCDCD','Lotus':'#FFB800','Brabham':'#006633','Tyrrell':'#002147','BRM':'#006400','Cooper':'#8B0000','default':'#555'};
+function tc(t){if(!t)return TC.default;for(const[k,v]of Object.entries(TC))if(t.includes(k.split(' ')[0]))return v;return TC.default;}
 
 // ── FLAGS ─────────────────────────────────────────────────────────────────────
-const FL = {
-  'Dutch':'🇳🇱','British':'🇬🇧','Monegasque':'🇲🇨','Australian':'🇦🇺','Spanish':'🇪🇸',
-  'German':'🇩🇪','Mexican':'🇲🇽','Finnish':'🇫🇮','French':'🇫🇷','Canadian':'🇨🇦',
-  'Japanese':'🇯🇵','Danish':'🇩🇰','Chinese':'🇨🇳','American':'🇺🇸','Thai':'🇹🇭',
-  'Italian':'🇮🇹','Austrian':'🇦🇹','Swiss':'🇨🇭','Brazilian':'🇧🇷','Argentine':'🇦🇷',
-  'Belgian':'🇧🇪','South African':'🇿🇦','New Zealander':'🇳🇿','Portuguese':'🇵🇹',
-  'Swedish':'🇸🇪','Colombian':'🇨🇴','Venezuelan':'🇻🇪','Polish':'🇵🇱','default':'🏁'
-};
-function fl(n) { return FL[n] || FL.default; }
+const FL = {'Dutch':'🇳🇱','British':'🇬🇧','Monegasque':'🇲🇨','Australian':'🇦🇺','Spanish':'🇪🇸','German':'🇩🇪','Mexican':'🇲🇽','Finnish':'🇫🇮','French':'🇫🇷','Canadian':'🇨🇦','Japanese':'🇯🇵','Danish':'🇩🇰','Chinese':'🇨🇳','American':'🇺🇸','Thai':'🇹🇭','Italian':'🇮🇹','Austrian':'🇦🇹','Swiss':'🇨🇭','Brazilian':'🇧🇷','Argentine':'🇦🇷','Belgian':'🇧🇪','South African':'🇿🇦','New Zealander':'🇳🇿','Portuguese':'🇵🇹','Swedish':'🇸🇪','Colombian':'🇨🇴','Venezuelan':'🇻🇪','Polish':'🇵🇱','default':'🏁'};
+function fl(n){return FL[n]||FL.default;}
 
-// ── FETCH NDJSON ──────────────────────────────────────────────────────────────
-async function fetchND(url) {
-  const r = await fetch(url);
-  const t = await r.text();
-  return t.trim().split('\n').filter(Boolean).map(l => JSON.parse(l));
+// ── FETCH ─────────────────────────────────────────────────────────────────────
+async function fetchND(url){
+  const r=await fetch(url);
+  const t=await r.text();
+  return t.trim().split('\n').filter(Boolean).map(l=>JSON.parse(l));
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
-async function init() {
-  try {
-    const [d, c, r] = await Promise.all([fetchND(URLS.drivers), fetchND(URLS.constructors), fetchND(URLS.races)]);
-    ALL.drivers = d;
-    ALL.constructors = c;
-    ALL.races = r;
-
-    // Build season list
-    const seasons = [...new Set(d.map(x => x.season))].sort((a,b) => b - a);
-    const sel = document.getElementById('seasonSelect');
-    sel.innerHTML = seasons.map(s => `<option value="${s}">${s}</option>`).join('');
-    season = seasons[0].toString();
-
-    // Hero KPIs — overall stats
-    const totalSeasons = seasons.length;
-    const totalRaces = [...new Set(r.map(x => x.race_name + x.season))].length;
-    const totalDrivers = [...new Set(d.map(x => x.driver_id))].length;
-    const totalRaceRows = r.length;
-
-    document.getElementById('heroKpis').innerHTML = `
-      <div class="kpi"><div class="kpi-num">${totalSeasons}<span>+</span></div><div class="kpi-label">Seasons</div></div>
-      <div class="kpi"><div class="kpi-num">${totalRaces}<span>+</span></div><div class="kpi-label">Races</div></div>
-      <div class="kpi"><div class="kpi-num">${totalDrivers}<span>+</span></div><div class="kpi-label">Drivers</div></div>
-      <div class="kpi"><div class="kpi-num">${totalRaceRows.toLocaleString()}</div><div class="kpi-label">Race Records</div></div>
-    `;
-
-    renderPipeStats(seasons, totalRaces, totalDrivers);
+async function init(){
+  try{
+    const[d,c,r]=await Promise.all([fetchND(URLS.drivers),fetchND(URLS.constructors),fetchND(URLS.races)]);
+    ALL.drivers=d; ALL.constructors=c; ALL.races=r;
+    const seasons=[...new Set(d.map(x=>x.season))].sort((a,b)=>b-a);
+    const sel=document.getElementById('seasonSelect');
+    sel.innerHTML=seasons.map(s=>`<option value="${s}">${s}</option>`).join('');
+    season=seasons[0].toString();
+    const totalRaces=[...new Set(r.map(x=>x.race_name+'_'+x.season))].length;
+    const totalDrivers=[...new Set(d.map(x=>x.driver_id))].length;
+    document.getElementById('heroKpis').innerHTML=`
+      <div class="kpi-pill"><div class="kpi-pill-num">${seasons.length}</div><div class="kpi-pill-label">Seasons</div></div>
+      <div class="kpi-pill"><div class="kpi-pill-num">${totalRaces}+</div><div class="kpi-pill-label">Races</div></div>
+      <div class="kpi-pill"><div class="kpi-pill-num">${totalDrivers}+</div><div class="kpi-pill-label">Drivers</div></div>
+      <div class="kpi-pill"><div class="kpi-pill-num">${ALL.races.length.toLocaleString()}</div><div class="kpi-pill-label">Records</div></div>`;
+    renderAllTime();
+    renderPipeStats(seasons,totalRaces,totalDrivers);
     render();
-  } catch(e) {
+  }catch(e){
     console.error(e);
-    document.getElementById('heroKpis').innerHTML = `<div class="err">⚠️ Failed to load data from Azure. Error: ${e.message}</div>`;
+    document.getElementById('heroKpis').innerHTML=`<div class="err">⚠️ Failed to load from Azure: ${e.message}</div>`;
   }
 }
 
-// ── SEASON CHANGE ─────────────────────────────────────────────────────────────
-function onSeasonChange() {
-  season = document.getElementById('seasonSelect').value;
-  render();
-}
+function onSeasonChange(){season=document.getElementById('seasonSelect').value;render();}
 
-// ── RENDER ALL ────────────────────────────────────────────────────────────────
-function render() {
-  const drivers = ALL.drivers.filter(d => d.season == season).sort((a,b) => a.position - b.position);
-  const cons = ALL.constructors.filter(c => c.season == season).sort((a,b) => a.position - b.position);
-  const races = ALL.races.filter(r => r.season == season);
-
-  // Build race map
-  const raceMap = {};
-  races.forEach(r => {
-    const key = r.round + '_' + r.race_name;
-    if (!raceMap[key]) raceMap[key] = { name:r.race_name, round:r.round, circuit:r.circuit, date:r.date, results:[] };
-    raceMap[key].results.push(r);
-  });
-  raceList = Object.values(raceMap).sort((a,b) => parseInt(a.round) - parseInt(b.round));
-
-  const totalRaces = raceList.length;
-  const champion = drivers[0];
-  const conChamp = cons[0];
-
-  // Season info bar
-  document.getElementById('seasonInfo').innerHTML =
-    `<span>${totalRaces}</span> races · <span>${drivers.length}</span> drivers · Champion: <span>${champion ? champion.driver_name : '—'}</span>`;
-
-  renderOverview(drivers, cons, champion, conChamp, totalRaces);
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function render(){
+  const drivers=ALL.drivers.filter(d=>d.season==season).sort((a,b)=>a.position-b.position);
+  const cons=ALL.constructors.filter(c=>c.season==season).sort((a,b)=>a.position-b.position);
+  const races=ALL.races.filter(r=>r.season==season);
+  const raceMap={};
+  races.forEach(r=>{const k=r.round+'_'+r.race_name;if(!raceMap[k])raceMap[k]={name:r.race_name,round:r.round,circuit:r.circuit,date:r.date,results:[]};raceMap[k].results.push(r);});
+  raceList=Object.values(raceMap).sort((a,b)=>parseInt(a.round)-parseInt(b.round));
+  const champ=drivers[0];
+  const conChamp=cons[0];
+  document.getElementById('seasonInfo').innerHTML=`<span>${raceList.length}</span> races · <span>${drivers.length}</span> drivers · Champion: <span>${champ?champ.driver_name:'—'}</span>`;
+  renderOverview(drivers,cons,champ,conChamp,raceList.length);
   renderDriverTable(drivers);
   renderConTable(cons);
   renderRaces();
 }
 
 // ── OVERVIEW ──────────────────────────────────────────────────────────────────
-function renderOverview(drivers, cons, champ, conChamp, totalRaces) {
-  document.getElementById('ovTitle').textContent = season + ' SEASON OVERVIEW';
-  document.getElementById('ovSub').textContent = `Formula 1 World Championship — ${season}`;
-
-  const wins = champ ? champ.wins : 0;
-  document.getElementById('ovKpis').innerHTML = `
-    <div class="kpi-card">
-      <div class="kpi-card-num">${champ ? champ.driver_name.split(' ').pop() : '—'}</div>
-      <div class="kpi-card-label">World Champion</div>
-      <div class="kpi-card-sub">${champ ? champ.points + ' pts' : ''}</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-card-num">${conChamp ? conChamp.constructor_name : '—'}</div>
-      <div class="kpi-card-label">Constructor Champion</div>
-      <div class="kpi-card-sub">${conChamp ? conChamp.points + ' pts' : ''}</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-card-num">${totalRaces}</div>
-      <div class="kpi-card-label">Races</div>
-      <div class="kpi-card-sub">${season} season</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-card-num">${wins}</div>
-      <div class="kpi-card-label">Champion Wins</div>
-      <div class="kpi-card-sub">${champ ? champ.driver_name : ''}</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-card-num">${drivers.length}</div>
-      <div class="kpi-card-label">Drivers</div>
-      <div class="kpi-card-sub">${cons.length} constructors</div>
-    </div>
-  `;
-
-  // Driver chart top 10
-  const top10 = drivers.slice(0, 10);
-  const maxP = top10[0]?.points || 1;
-  document.getElementById('driverChart').innerHTML = top10.map(d => `
-    <div class="bar-row">
-      <div class="bar-name">${fl(d.nationality)} ${d.driver_name}</div>
-      <div class="bar-track">
-        <div class="bar-fill" style="width:${(d.points/maxP)*100}%;background:${tc(d.constructor)}">${d.points}</div>
-      </div>
-    </div>`).join('') || '<div class="empty">No data for this season</div>';
-
-  // Constructor chart
-  const maxC = cons[0]?.points || 1;
-  document.getElementById('conChart').innerHTML = cons.map(c => `
-    <div class="bar-row">
-      <div class="bar-name">${c.constructor_name}</div>
-      <div class="bar-track">
-        <div class="bar-fill" style="width:${(c.points/maxC)*100}%;background:${tc(c.constructor_name)}">${c.points}</div>
-      </div>
-    </div>`).join('') || '<div class="empty">No data for this season</div>';
+function renderOverview(drivers,cons,champ,conChamp,totalRaces){
+  document.getElementById('ovTitle').textContent=season+' SEASON OVERVIEW';
+  document.getElementById('ovSub').textContent='Formula 1 World Championship — '+season;
+  document.getElementById('ovKpis').innerHTML=`
+    <div class="kpi-card"><div class="kpi-card-num">${champ?champ.driver_name.split(' ').slice(-1)[0]:'—'}</div><div class="kpi-card-label">World Champion</div><div class="kpi-card-sub">${champ?champ.points+' pts':''}</div></div>
+    <div class="kpi-card"><div class="kpi-card-num">${conChamp?conChamp.constructor_name.split(' ')[0]:'—'}</div><div class="kpi-card-label">Constructor Champ</div><div class="kpi-card-sub">${conChamp?conChamp.points+' pts':''}</div></div>
+    <div class="kpi-card"><div class="kpi-card-num">${totalRaces}</div><div class="kpi-card-label">Races</div><div class="kpi-card-sub">${season} season</div></div>
+    <div class="kpi-card"><div class="kpi-card-num">${champ?champ.wins:0}</div><div class="kpi-card-label">Champion Wins</div><div class="kpi-card-sub">${champ?champ.driver_name:''}</div></div>
+    <div class="kpi-card"><div class="kpi-card-num">${drivers.length}</div><div class="kpi-card-label">Drivers</div><div class="kpi-card-sub">${cons.length} constructors</div></div>`;
+  const top10=drivers.slice(0,10);
+  const maxP=top10[0]?.points||1;
+  document.getElementById('driverChart').innerHTML=top10.map(d=>`<div class="bar-row"><div class="bar-name">${fl(d.nationality)} ${d.driver_name}</div><div class="bar-track"><div class="bar-fill" style="width:${(d.points/maxP)*100}%;background:${tc(d.constructor)}">${d.points}</div></div></div>`).join('')||'<div class="empty">No data</div>';
+  const maxC=cons[0]?.points||1;
+  document.getElementById('conChart').innerHTML=cons.map(c=>`<div class="bar-row"><div class="bar-name">${c.constructor_name}</div><div class="bar-track"><div class="bar-fill" style="width:${(c.points/maxC)*100}%;background:${tc(c.constructor_name)}">${c.points}</div></div></div>`).join('')||'<div class="empty">No data</div>';
 }
 
 // ── DRIVER TABLE ──────────────────────────────────────────────────────────────
-function renderDriverTable(drivers) {
-  document.getElementById('drvSub').textContent = `${season} Formula 1 Drivers Championship`;
-  if (!drivers.length) { document.getElementById('driverTable').innerHTML = '<div class="empty">No driver data for this season</div>'; return; }
-  const maxP = drivers[0].points || 1;
-  document.getElementById('driverTable').innerHTML = `
-    <div class="table-wrap"><table>
-      <thead><tr><th>Pos</th><th>Driver</th><th>Constructor</th><th>Points</th><th>Wins</th></tr></thead>
-      <tbody>${drivers.map(d => `
-        <tr>
-          <td><div class="pos ${['1','2','3'].includes(String(d.position))?'p'+d.position:'px'}">${d.position}</div></td>
-          <td><div class="driver-cell"><div class="name">${fl(d.nationality)} ${d.driver_name}</div><div class="nat">${d.nationality}</div></div></td>
-          <td><span class="tdot" style="background:${tc(d.constructor)}"></span>${d.constructor}</td>
-          <td><div class="pts-wrap"><div class="pts-bar" style="width:${Math.max((d.points/maxP)*100,2)}px"></div><div class="pts-num">${d.points}</div></div></td>
-          <td>${d.wins > 0 ? `<span class="win-b">🏆 ${d.wins}</span>` : '<span style="color:var(--muted)">—</span>'}</td>
-        </tr>`).join('')}
-      </tbody>
-    </table></div>`;
+function renderDriverTable(drivers){
+  document.getElementById('drvSub').textContent=season+' Drivers Championship';
+  if(!drivers.length){document.getElementById('driverTable').innerHTML='<div class="empty">No data for this season</div>';return;}
+  const maxP=drivers[0].points||1;
+  document.getElementById('driverTable').innerHTML=`<div class="table-wrap"><table><thead><tr><th>Pos</th><th>Driver</th><th>Team</th><th>Pts</th><th>W</th></tr></thead><tbody>${drivers.map(d=>`<tr style="cursor:pointer" onclick="showCareer('${d.driver_id}','${d.driver_name}')"><td><div class="pos ${['1','2','3'].includes(String(d.position))?'p'+d.position:'px'}">${d.position}</div></td><td><div class="dname">${fl(d.nationality)} ${d.driver_name}</div></td><td><span class="tdot" style="background:${tc(d.constructor)}"></span>${d.constructor}</td><td><div class="pts-wrap"><div class="pts-bar" style="width:${Math.max((d.points/maxP)*80,2)}px"></div><div class="pts-num">${d.points}</div></div></td><td>${d.wins>0?`<span class="win-b">🏆${d.wins}</span>`:'<span style="color:var(--muted)">—</span>'}</td></tr>`).join('')}</tbody></table></div><p style="font-size:11px;color:var(--muted);margin-top:8px;padding-left:4px">Tap a driver to view career stats</p>`;
 }
 
-// ── CONSTRUCTOR TABLE ─────────────────────────────────────────────────────────
-function renderConTable(cons) {
-  document.getElementById('conSub').textContent = `${season} Constructors Championship`;
-  if (!cons.length) { document.getElementById('conTable').innerHTML = '<div class="empty">No constructor data for this season</div>'; return; }
-  const maxP = cons[0].points || 1;
-  document.getElementById('conTable').innerHTML = `
-    <div class="table-wrap"><table>
-      <thead><tr><th>Pos</th><th>Constructor</th><th>Nationality</th><th>Points</th><th>Wins</th></tr></thead>
-      <tbody>${cons.map(c => `
-        <tr>
-          <td><div class="pos ${['1','2','3'].includes(String(c.position))?'p'+c.position:'px'}">${c.position}</div></td>
-          <td><span class="tdot" style="background:${tc(c.constructor_name)}"></span><strong>${c.constructor_name}</strong></td>
-          <td>${fl(c.nationality)} ${c.nationality}</td>
-          <td><div class="pts-wrap"><div class="pts-bar" style="width:${Math.max((c.points/maxP)*100,2)}px;background:${tc(c.constructor_name)}"></div><div class="pts-num">${c.points}</div></div></td>
-          <td>${c.wins > 0 ? `<span class="win-b">🏆 ${c.wins}</span>` : '<span style="color:var(--muted)">—</span>'}</td>
-        </tr>`).join('')}
-      </tbody>
-    </table></div>`;
+// ── CON TABLE ─────────────────────────────────────────────────────────────────
+function renderConTable(cons){
+  document.getElementById('conSub').textContent=season+' Constructors Championship';
+  if(!cons.length){document.getElementById('conTable').innerHTML='<div class="empty">No data for this season</div>';return;}
+  const maxP=cons[0].points||1;
+  document.getElementById('conTable').innerHTML=`<div class="table-wrap"><table><thead><tr><th>Pos</th><th>Constructor</th><th>Nat</th><th>Pts</th><th>W</th></tr></thead><tbody>${cons.map(c=>`<tr><td><div class="pos ${['1','2','3'].includes(String(c.position))?'p'+c.position:'px'}">${c.position}</div></td><td><span class="tdot" style="background:${tc(c.constructor_name)}"></span><strong>${c.constructor_name}</strong></td><td>${fl(c.nationality)}</td><td><div class="pts-wrap"><div class="pts-bar" style="width:${Math.max((c.points/maxP)*80,2)}px;background:${tc(c.constructor_name)}"></div><div class="pts-num">${c.points}</div></div></td><td>${c.wins>0?`<span class="win-b">🏆${c.wins}</span>`:'<span style="color:var(--muted)">—</span>'}</td></tr>`).join('')}</tbody></table></div>`;
 }
 
 // ── RACES ─────────────────────────────────────────────────────────────────────
-function renderRaces() {
-  if (!raceList.length) { document.getElementById('racesGrid').innerHTML = '<div class="empty">No race data for this season</div>'; document.getElementById('raceDetail').innerHTML=''; return; }
-  document.getElementById('racesGrid').innerHTML = `
-    <div class="races-grid">${raceList.map((race,i) => {
-      const winner = race.results.find(r => r.position==='1') || race.results[0];
-      return `<div class="race-card" id="rc${i}" onclick="showRace(${i})">
-        <div class="rc-round">Round ${race.round}</div>
-        <div class="rc-name">${race.name}</div>
-        <div class="rc-meta">🏁 ${race.circuit} &nbsp;·&nbsp; 📅 ${race.date}</div>
-        ${winner ? `<div class="rc-winner"><div><div class="rc-win-lbl">Winner</div><div class="rc-win-name">🏆 ${winner.driver_name}</div></div></div>` : ''}
-      </div>`;
-    }).join('')}</div>`;
-  document.getElementById('raceDetail').innerHTML = '';
+function renderRaces(){
+  if(!raceList.length){document.getElementById('racesGrid').innerHTML='<div class="empty">No race data for this season</div>';document.getElementById('raceDetail').innerHTML='';return;}
+  document.getElementById('racesGrid').innerHTML=`<div class="races-grid">${raceList.map((race,i)=>{const winner=race.results.find(r=>r.position==='1')||race.results[0];return`<div class="race-card" id="rc${i}" onclick="showRace(${i})"><div class="rc-round">Round ${race.round}</div><div class="rc-name">${race.name}</div><div class="rc-meta">🏁 ${race.circuit}<br>📅 ${race.date}</div>${winner?`<div class="rc-winner"><div class="rc-win-lbl">Winner</div><div class="rc-win-name">🏆 ${winner.driver_name}</div></div>`:''}</div>`;}).join('')}</div>`;
+  document.getElementById('raceDetail').innerHTML='';
 }
 
-function showRace(i) {
-  document.querySelectorAll('.race-card').forEach(c => c.classList.remove('sel'));
+function showRace(i){
+  document.querySelectorAll('.race-card').forEach(c=>c.classList.remove('sel'));
   document.getElementById('rc'+i)?.classList.add('sel');
-  const race = raceList[i];
-  if (!race) return;
-  const sorted = race.results.sort((a,b) => (parseInt(a.position)||99) - (parseInt(b.position)||99));
-  document.getElementById('raceDetail').innerHTML = `
-    <div class="detail-box">
-      <div class="detail-title">🏁 Round ${race.round} — ${race.name} &nbsp;|&nbsp; ${race.date}</div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Pos</th><th>Driver</th><th>Constructor</th><th>Grid</th><th>Laps</th><th>Points</th><th>Status</th></tr></thead>
-        <tbody>${sorted.map(r => `
-          <tr>
-            <td><div class="pos ${['1','2','3'].includes(r.position)?'p'+r.position:'px'}">${r.position}</div></td>
-            <td><strong>${r.driver_name}</strong></td>
-            <td><span class="tdot" style="background:${tc(r.constructor)}"></span>${r.constructor}</td>
-            <td style="color:var(--muted)">${r.grid}</td>
-            <td style="color:var(--muted)">${r.laps}</td>
-            <td>${r.points > 0 ? `<span class="win-b">${r.points}</span>` : `<span style="color:var(--muted)">${r.points}</span>`}</td>
-            <td class="${r.status==='Finished'?'tag-fin':'tag-dnf'}">${r.status}</td>
-          </tr>`).join('')}
-        </tbody>
-      </table></div>
-    </div>`;
+  const race=raceList[i];if(!race)return;
+  const sorted=race.results.sort((a,b)=>(parseInt(a.position)||99)-(parseInt(b.position)||99));
+  document.getElementById('raceDetail').innerHTML=`<div class="detail-box"><div class="detail-title">🏁 Round ${race.round} — ${race.name} | ${race.date}</div><div class="table-wrap"><table><thead><tr><th>Pos</th><th>Driver</th><th>Team</th><th>Grid</th><th>Laps</th><th>Pts</th><th>Status</th></tr></thead><tbody>${sorted.map(r=>`<tr><td><div class="pos ${['1','2','3'].includes(r.position)?'p'+r.position:'px'}">${r.position}</div></td><td><strong>${r.driver_name}</strong></td><td><span class="tdot" style="background:${tc(r.constructor)}"></span>${r.constructor}</td><td style="color:var(--muted)">${r.grid}</td><td style="color:var(--muted)">${r.laps}</td><td>${r.points>0?`<span class="win-b">${r.points}</span>`:`<span style="color:var(--muted)">${r.points}</span>`}</td><td class="${r.status==='Finished'?'tag-fin':'tag-dnf'}">${r.status}</td></tr>`).join('')}</tbody></table></div></div>`;
   document.getElementById('raceDetail').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-// ── PIPELINE STATS ────────────────────────────────────────────────────────────
-function renderPipeStats(seasons, totalRaces, totalDrivers) {
-  document.getElementById('pipeStats').innerHTML = `
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;">
-      <div><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--red)">${seasons.length}</div><div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Seasons Available</div></div>
-      <div><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--red)">${totalRaces}+</div><div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Total Races</div></div>
-      <div><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--red)">${totalDrivers}+</div><div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Unique Drivers</div></div>
-      <div><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--red)">${ALL.races.length.toLocaleString()}</div><div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Race Records</div></div>
-      <div><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--red)">3</div><div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">ADLS Layers</div></div>
-      <div><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--red)">Delta</div><div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Storage Format</div></div>
-    </div>`;
+// ── CAREER MODAL ──────────────────────────────────────────────────────────────
+function showCareer(driverId,driverName){
+  const allSeasons=ALL.drivers.filter(d=>d.driver_id===driverId).sort((a,b)=>a.season-b.season);
+  if(!allSeasons.length)return;
+  const championships=allSeasons.filter(d=>d.position===1||d.position==='1').length;
+  const totalWins=allSeasons.reduce((s,d)=>s+parseInt(d.wins||0),0);
+  const totalPts=allSeasons.reduce((s,d)=>s+parseFloat(d.points||0),0);
+  const teams=[...new Set(allSeasons.map(d=>d.constructor))];
+  const firstSeason=allSeasons[0].season;
+  const lastSeason=allSeasons[allSeasons.length-1].season;
+  document.getElementById('modalTitle').textContent=driverName;
+  document.getElementById('modalBody').innerHTML=`
+    <div class="career-stat-grid">
+      <div class="career-stat"><div class="career-stat-num">${championships}</div><div class="career-stat-label">Championships</div></div>
+      <div class="career-stat"><div class="career-stat-num">${totalWins}</div><div class="career-stat-label">Race Wins</div></div>
+      <div class="career-stat"><div class="career-stat-num">${allSeasons.length}</div><div class="career-stat-label">Seasons</div></div>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Active: ${firstSeason}–${lastSeason} · Teams: ${teams.join(', ')}</p>
+    <div class="chart-label">Points Per Season</div>
+    <div class="bar-chart" style="margin-top:10px">${(()=>{const maxP=Math.max(...allSeasons.map(d=>d.points));return allSeasons.map(d=>`<div class="bar-row"><div class="bar-name">${d.season}</div><div class="bar-track"><div class="bar-fill" style="width:${(d.points/maxP)*100}%;background:${tc(d.constructor)}">${d.points}</div></div></div>`).join('');})()}</div>`;
+  document.getElementById('careerModal').classList.add('open');
 }
 
-// ── NAVIGATION ────────────────────────────────────────────────────────────────
-function nav(id, btn) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+function closeModal(e){if(e.target.id==='careerModal')document.getElementById('careerModal').classList.remove('open');}
+
+// ── ALL TIME ──────────────────────────────────────────────────────────────────
+function renderAllTime(){
+  // Championship wins per driver
+  const champWins={};
+  ALL.drivers.forEach(d=>{if(d.position==1||d.position==='1'){champWins[d.driver_name]=(champWins[d.driver_name]||0)+1;}});
+  const topChamps=Object.entries(champWins).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const maxCW=topChamps[0]?.[1]||1;
+  document.getElementById('atDriverWins').innerHTML=topChamps.map(([n,w])=>`<div class="bar-row"><div class="bar-name">${n}</div><div class="bar-track"><div class="bar-fill" style="width:${(w/maxCW)*100}%;background:var(--red)">${w}</div></div></div>`).join('');
+
+  // Race wins per driver
+  const raceWins={};
+  ALL.drivers.forEach(d=>{if(d.wins>0)raceWins[d.driver_name]=(raceWins[d.driver_name]||0)+parseInt(d.wins);});
+  const topRW=Object.entries(raceWins).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const maxRW=topRW[0]?.[1]||1;
+  document.getElementById('atRaceWins').innerHTML=topRW.map(([n,w])=>`<div class="bar-row"><div class="bar-name">${n}</div><div class="bar-track"><div class="bar-fill" style="width:${(w/maxRW)*100}%;background:#3671C6">${w}</div></div></div>`).join('');
+
+  // Constructor championships
+  const conChamps={};
+  ALL.constructors.forEach(c=>{if(c.position==1||c.position==='1')conChamps[c.constructor_name]=(conChamps[c.constructor_name]||0)+1;});
+  const topCon=Object.entries(conChamps).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const maxCC=topCon[0]?.[1]||1;
+  document.getElementById('atConWins').innerHTML=topCon.map(([n,w])=>`<div class="bar-row"><div class="bar-name">${n}</div><div class="bar-track"><div class="bar-fill" style="width:${(w/maxCC)*100}%;background:${tc(n)}">${w}</div></div></div>`).join('');
+
+  // Decade dominance
+  const decades={};
+  ALL.races.forEach(r=>{if(r.position==='1'){const dec=Math.floor(parseInt(r.season)/10)*10;const key=dec+'s';decades[key]=(decades[key]||{}); decades[key][r.constructor]=(decades[key][r.constructor]||0)+1;}});
+  const decadeList=Object.entries(decades).sort((a,b)=>a[0].localeCompare(b[0]));
+  document.getElementById('atDecade').innerHTML=decadeList.map(([dec,teams])=>{const top=Object.entries(teams).sort((a,b)=>b[1]-a[1])[0];const total=Object.values(teams).reduce((s,v)=>s+v,0);return`<div class="bar-row"><div class="bar-name">${dec}</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:${tc(top?.[0])}">${top?.[0]||'Various'} (${total})</div></div></div>`;}).join('');
+
+  // Most points in a season
+  const seasonPts=ALL.drivers.map(d=>({name:d.driver_name,season:d.season,points:d.points,team:d.constructor})).sort((a,b)=>b.points-a.points).slice(0,10);
+  const maxSP=seasonPts[0]?.points||1;
+  document.getElementById('atPoints').innerHTML=seasonPts.map(d=>`<div class="bar-row"><div class="bar-name">${d.name} '${String(d.season).slice(2)}</div><div class="bar-track"><div class="bar-fill" style="width:${(d.points/maxSP)*100}%;background:${tc(d.team)}">${d.points}</div></div></div>`).join('');
+}
+
+// ── SEARCH ────────────────────────────────────────────────────────────────────
+function onSearch(){
+  const q=document.getElementById('searchInput').value.trim().toLowerCase();
+  const res=document.getElementById('searchResults');
+  if(!q){res.style.display='none';return;}
+  const results=[];
+  // Search drivers
+  const driverMap={};
+  ALL.drivers.forEach(d=>{if(!driverMap[d.driver_id]&&d.driver_name.toLowerCase().includes(q))driverMap[d.driver_id]=d;});
+  Object.values(driverMap).slice(0,4).forEach(d=>results.push({type:'driver',title:`${fl(d.nationality)} ${d.driver_name}`,sub:`Driver · ${d.nationality}`,action:()=>showCareer(d.driver_id,d.driver_name)}));
+  // Search circuits
+  const circuitMap={};
+  ALL.races.forEach(r=>{if(!circuitMap[r.circuit]&&r.circuit.toLowerCase().includes(q))circuitMap[r.circuit]=r;});
+  Object.values(circuitMap).slice(0,3).forEach(r=>results.push({type:'circuit',title:`🏁 ${r.circuit}`,sub:`Circuit · ${r.race_name}`,action:()=>{season=r.season;document.getElementById('seasonSelect').value=season;render();nav('races',document.querySelector('.bottom-nav button:nth-child(4)'));}}));
+  // Search constructors
+  const conMap={};
+  ALL.constructors.forEach(c=>{if(!conMap[c.constructor_name]&&c.constructor_name.toLowerCase().includes(q))conMap[c.constructor_name]=c;});
+  Object.values(conMap).slice(0,3).forEach(c=>results.push({type:'team',title:`🏭 ${c.constructor_name}`,sub:`Constructor · ${c.nationality}`,action:()=>{}}));
+
+  if(!results.length){res.innerHTML='<div class="search-result-item"><div class="sr-title">No results found</div></div>';res.style.display='block';return;}
+  res.innerHTML=results.map((r,i)=>`<div class="search-result-item" onclick="searchActions[${i}]()"><div class="sr-title">${r.title}</div><div class="sr-sub">${r.sub}</div></div>`).join('');
+  window.searchActions=results.map(r=>r.action);
+  res.style.display='block';
+}
+document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))document.getElementById('searchResults').style.display='none';});
+
+// ── PIPELINE STATS ────────────────────────────────────────────────────────────
+function renderPipeStats(seasons,totalRaces,totalDrivers){
+  document.getElementById('pipeStats').innerHTML=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+    <div><div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--red)">${seasons.length}</div><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Seasons</div></div>
+    <div><div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--red)">${totalRaces}+</div><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Total Races</div></div>
+    <div><div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--red)">${totalDrivers}+</div><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Unique Drivers</div></div>
+    <div><div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--red)">${ALL.races.length.toLocaleString()}</div><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Race Records</div></div>
+    <div><div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--red)">Delta</div><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Storage Format</div></div>
+    <div><div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--red)">3</div><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">ADLS Layers</div></div>
+  </div>`;
+}
+
+// ── NAV ───────────────────────────────────────────────────────────────────────
+function nav(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav button,.top-nav button').forEach(b=>b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  btn.classList.add('active');
+  // Activate matching buttons in both navs
+  document.querySelectorAll('.bottom-nav button,.top-nav button').forEach(b=>{
+    if(b.getAttribute('onclick')===`nav('${id}',this)`)b.classList.add('active');
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 init();
